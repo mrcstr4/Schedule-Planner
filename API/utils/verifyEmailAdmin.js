@@ -16,7 +16,14 @@ export const VerifyEmailAdmin = async (req, res, next) => {
             verificationExpires: { $gt: Date.now() }
         });
 
-        if (!user) return res.status(400).send("Token expired or invalid.");
+        if (!user){
+            return res.status(400).send(`
+               <script>
+                   alert("Verification token expired or Invalid");
+                    window.location.href = "http://localhost:5173/admin/login";
+               </script>
+           `);
+       }
 
         // Compare the stored hashed token with the received token
         const isMatch = bcrypt.compareSync(token, user.verificationToken);

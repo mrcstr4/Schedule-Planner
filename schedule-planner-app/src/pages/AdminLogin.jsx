@@ -38,14 +38,6 @@ const AdminLogin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch({type: "LOGIN_START"})
-    // setError(""); // Clear previous errors
-
-    // // Validate form before sending request
-    // const validationError = validateForm(email, password);
-    // if (validationError) {
-    //   setError(validationError);
-    //   return;
-    // }
     try {
 
       const res = await axios.post("http://localhost:4000/api/auth/login/admin", {
@@ -58,6 +50,8 @@ const AdminLogin = () => {
     } catch (error) {
       const errorMessage = error.response?.data?.message || "Invalid credentials";
       dispatch({ type: "LOGIN_FAILURE", payload: errorMessage });
+      setEmail("")
+      setPassword("")
     }
   };
 
@@ -120,22 +114,22 @@ const AdminLogin = () => {
                 <input type="checkbox" className="mr-2" />
                 Remember Me
               </label>
-              {/* <a href="/admin/forgot-password" className="text-blue-500 hover:underline">
-                Forgot Password?
-              </a> */}
             </div>
 
             {/* Login Button */}
             <button
-              type="submit"
-              className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition"
-            >
-              Login
-            </button>
+                type="submit"
+                className="w-full bg-blue-500 text-white py-2 rounded flex justify-center items-center"
+                onClick={handleSubmit}
+                disabled={loading} // Disable button when loading
+              >
+                {loading ? (
+                  <span className="animate-spin h-5 w-5 border-4 border-white border-t-transparent rounded-full"></span>
+                ) : (
+                  "Login"
+                )}
+          </button>
           </form>
-          {/* <p className="text-center text-sm mt-4">
-            <a href="/admin/register" className="text-blue-500">Register</a>
-          </p>   */}
         </div>
       </div>
     </div>
