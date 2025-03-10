@@ -59,7 +59,7 @@ export const Register = async (req, res, next) => {
   
       const verificationCode = generateVerificationCode();
       const verificationToken = generateVerificationToken();
-      const verificationExpires = new Date(Date.now() + 1 * 60 * 1000); // 10 minutes expiry
+      const verificationExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry
       const hashedToken = bcrypt.hashSync(verificationToken, 10);
   
       const newUser = new User({
