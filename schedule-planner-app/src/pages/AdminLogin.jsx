@@ -57,7 +57,6 @@ const AdminLogin = () => {
 
   
   useEffect(() => {
-    console.log(user);
   }, [user]); // Logs user only when it changes
 
   return (
