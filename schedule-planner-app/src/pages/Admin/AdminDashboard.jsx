@@ -15,7 +15,7 @@ const AdminDashboard = () => {
 
   const handleLogout = () => {
     dispatch({ type: "LOGOUT" });
-    navigate("/login");
+    navigate("/admin/login");
   };
 
   return (

@@ -1,7 +1,12 @@
 import React, { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { FaSignOutAlt, FaHome, FaBook, FaUser, FaBars, FaTimes,FaClipboardList  } from "react-icons/fa";
+import { FaSignOutAlt, FaHome, FaBullhorn, FaUser, FaBars, FaTimes, FaClipboardList, FaRegCalendar } from "react-icons/fa";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction"; // For click & drag events
+import timeGridPlugin from "@fullcalendar/timegrid"; // For week/day views
+import listPlugin from "@fullcalendar/list"; // For list vie
 
 const Dashboard = () => {
   const { user, dispatch } = useContext(AuthContext);
@@ -13,6 +18,11 @@ const Dashboard = () => {
     navigate("/login");
   };
 
+  const handleRoute = (path) => {
+    navigate(path);
+  };
+
+
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
@@ -22,24 +32,21 @@ const Dashboard = () => {
         } md:translate-x-0 transition-transform duration-300 ease-in-out`}
       >
         {/* Close Button (Mobile) */}
-        <button
-          className="md:hidden absolute top-4 right-4 text-gray-600"
-          onClick={() => setIsSidebarOpen(false)}
-        >
+        <button className="md:hidden absolute top-4 right-4 text-gray-600" onClick={() => setIsSidebarOpen(false)}>
           <FaTimes size={24} />
         </button>
 
         <h5 className="text-xl font-semibold text-gray-900 mb-4">Dashboard</h5>
         <nav className="flex flex-col gap-2">
-          <button className="flex items-center p-3 rounded-lg hover:bg-blue-50 transition">
+          <button className="flex items-center p-3 rounded-lg hover:bg-blue-50 transition"  onClick={() => handleRoute("/homepage")}>
             <FaHome className="mr-3 text-blue-900" />
             Home
           </button>
-          <button className="flex items-center p-3 rounded-lg hover:bg-blue-50 transition">
+          <button className="flex items-center p-3 rounded-lg hover:bg-blue-50 transition"  onClick={() => handleRoute("/user/request")}>
             <FaClipboardList  className="mr-3 text-blue-900" />
             Request Shift
           </button>
-          <button className="flex items-center p-3 rounded-lg hover:bg-blue-50 transition">
+          <button className="flex items-center p-3 rounded-lg hover:bg-blue-50 transition"  onClick={() => handleRoute("/user/profile")}>
             <FaUser className="mr-3 text-blue-900" />
             Profile
           </button>
@@ -56,15 +63,42 @@ const Dashboard = () => {
       {/* Main Content */}
       <div className="flex-1 p-6">
         {/* Hamburger Menu Button (Mobile) */}
-        <button
-          className="md:hidden mb-4 text-gray-600"
-          onClick={() => setIsSidebarOpen(true)}
-        >
+        <button className="md:hidden mb-4 text-gray-600" onClick={() => setIsSidebarOpen(true)}>
           <FaBars size={24} />
         </button>
 
-        <h2 className="text-2xl font-semibold">Welcome, {user?.name || "User"}!</h2>
-        
+        <h2 className="text-2xl font-semibold">Welcome, {user.user?.firstname || "Admin"}!</h2>
+
+        {/* FullCalendar Component */}
+        <div className="mt-6 bg-white shadow-lg p-4 rounded-lg">
+        <FullCalendar
+        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
+        initialView="dayGridMonth"
+        headerToolbar={{
+          left: "prev,next today",
+          center: "title",
+          right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek",
+        }}
+        height="auto"
+        selectable={true}
+        editable={true}
+        dateClick={(info) => alert(`Clicked on: ${info.dateStr}`)}
+        events={[
+          {
+            title: "Meeting",
+            start: "2024-03-15T10:00:00",
+            end: "2024-03-15T12:00:00",
+            color: "blue",
+          },
+          {
+            title: "Conference",
+            start: "2024-03-18",
+            end: "2024-03-20",
+            color: "red",
+          },
+        ]}
+      />
+        </div>
       </div>
     </div>
   );
