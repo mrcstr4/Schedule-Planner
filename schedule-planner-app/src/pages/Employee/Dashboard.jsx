@@ -1,68 +1,57 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { FaSignOutAlt, FaHome, FaUser } from "react-icons/fa";
 
-
-const HomePage = () => {
-
-   const [test, setTest] = useState("");
-  const handleSubmit = () => {
-    setTest("tessssttttt")
-    
-  }
-
-  const navigate = useNavigate()
+const Dashboard = () => {
+  const { user, dispatch } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const handleLogout = () => {
-    setTest("");
-    localStorage.clear();
-    navigate("/login")
-  }
-
+    dispatch({ type: "LOGOUT" });
+    navigate("/login");
+  };
 
   return (
-    
-    <div className="relative flex flex-col items-center justify-center min-h-screen bg-gray-100">
-       Dashboard
-      <h1 id="test"></h1>
-       <form onSubmit={handleSubmit}>
- <label> {test}</label>
-       <input
-                type="text"
-                id="test"
-                placeholder="test"
-                className="w-full px-4 py-2 mt-2 border rounded-md focus:ring focus:ring-blue-300 focus:outline-none"
-                
-                
-              />
+    <div className="flex h-screen bg-gray-100">
+      {/* Sidebar */}
+      <aside className="w-64 bg-blue-600 text-white p-6 space-y-6">
+        <h2 className="text-2xl font-bold">Dashboard</h2>
+        <nav>
+          <ul className="space-y-4">
+            <li className="flex items-center space-x-2">
+              <FaHome />
+              <a href="/homepage" className="hover:underline">Home</a>
+            </li>
+            <li className="flex items-center space-x-2">
+              <FaUser />
+              <a href="/profile" className="hover:underline">Profile</a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
 
-<button 
-              type="submit"
-              className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition"
-            >
-              test
-            </button>
-       </form>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        {/* Navbar */}
+        <header className="bg-white shadow p-4 flex justify-between items-center">
+          <h2 className="text-lg font-semibold">Welcome, {user?.email}</h2>
+          <button
+            onClick={handleLogout}
+            className="flex items-center bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          >
+            <FaSignOutAlt className="mr-2" /> Logout
+          </button>
+        </header>
 
-
-
-       <form onSubmit={handleLogout}>
-
-      <button 
-              type="submit"
-              className="mt-10 w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition"
-            >
-              Logout
-            </button>
-       </form>
-
+        {/* Dashboard Content */}
+        <main className="p-6">
+          <h3 className="text-2xl font-semibold">Dashboard Overview</h3>
+          <p className="mt-2 text-gray-600">This is your dashboard where you can manage your tasks and settings.</p>
+        </main>
+      </div>
     </div>
-
-    
-
   );
 };
 
-
-
-export default HomePage;
+export default Dashboard;
