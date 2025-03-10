@@ -11,7 +11,7 @@ export const forgetPassword = async (req, res) => {
     const { email } = req.body;
     if (!email) return res.status(400).json({ message: "Email is required" });
 
-    const user = await User.findOne({ email });  // ✅ FIX: Correct field name
+    const user = await User.findOne({ email });  //
     if (!user) return res.status(404).json({ message: "User not found" });
     
     // Generate Reset Token
@@ -76,7 +76,7 @@ export const resetPassword = async (req, res) => {
     }
 
     // Hash New Password
-    const salt = await bcrypt.genSalt(10);  // ✅ FIX: Corrected bcrypt usage
+    const salt = await bcrypt.genSalt(10);  // 
     user.password = await bcrypt.hash(newPassword, salt);
     await user.save();
 

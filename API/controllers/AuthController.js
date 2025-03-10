@@ -34,7 +34,6 @@ export const Register = async (req, res, next) => {
         department: req.body.department,
         password: hash,
         isAdmin:  false,
-        // verificationCode,
         verificationToken: hashedToken,
         verificationExpires,
       });
@@ -47,7 +46,7 @@ export const Register = async (req, res, next) => {
       // Send email with both code and link
       await sendVerificationEmail(req.body.email, verificationToken); // add verification code if needed
   
-      res.status(200).send('User registered successfully. Check your email to verify your account.');
+      res.status(200).json({ message: "User registered successfully. Check your email to verify your account." });
     } catch (error) {
       next(error);
     }
@@ -60,7 +59,7 @@ export const Register = async (req, res, next) => {
   
       const verificationCode = generateVerificationCode();
       const verificationToken = generateVerificationToken();
-      const verificationExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry
+      const verificationExpires = new Date(Date.now() + 1 * 60 * 1000); // 10 minutes expiry
       const hashedToken = bcrypt.hashSync(verificationToken, 10);
   
       const newUser = new User({
@@ -82,7 +81,7 @@ export const Register = async (req, res, next) => {
       // Send email with both code and link
       await sendVerificationEmailAdmin(req.body.email, verificationToken); // add verification code if needed
   
-      res.status(200).send('Admin registered successfully. Check your email to verify your account.');
+      res.status(200).json({ message: "Admin registered successfully. Check your email to verify your account." });
     } catch (error) {
       next(error);
     }
@@ -162,10 +161,23 @@ const sendVerificationEmail = async (email, token) => {
 export const Login = async(req, res, next) => { 
   if(req.body.email === "" || req.body.password === "") return next(createError(404, "Please enter your email and Password"))
     try {
+
+      // return next(createError(400,'Please verify your email before logging in.'));
       
         const user = await User.findOne({email: req.body.email})
         if (!user) return next(createError(404, "User not found"))
-        if (!user.isVerified) return next(createError(400,'Please verify your email before logging in.'));
+        if (!user.isVerified) {
+            if (user.verificationExpires.getTime() < Date.now()) {  
+                try {
+                    const delUser = await User.findOneAndDelete({ email: req.body.email });
+                    if (delUser) return next(createError(400, "Email failed to verify, account deleted"));
+                } catch (error) {
+                    return next(error);
+                }
+            }else{
+              return next(createError(400, "Please verify your email"));
+            }
+        }
 
         const passwordCorrect = await bcrypt.compare(req.body.password, user.password);
         if(!passwordCorrect) 
@@ -195,8 +207,20 @@ export const Login = async(req, res, next) => {
       
         const user = await User.findOne({email: req.body.email})
         if (!user) return next(createError(404, "User not found"))
-        if (!user.isVerified) return next(createError(403,'Please verify your email before logging in.'));
+          if (!user.isVerified) {
+            if (user.verificationExpires.getTime() < Date.now()) {  
+                try {
+                    const delUser = await User.findOneAndDelete({ email: req.body.email });
+                    if (delUser) return next(createError(400, "Email failed to verify, account deleted"));
+                } catch (error) {
+                    return next(error);
+                }
+            }else{
+              return next(createError(400, "Please verify your email"));
+            }
+        }
         if (!user.isAdmin) return next(createError(403,'Your are not allowed.'));
+        
         
 
         const passwordCorrect = await bcrypt.compare(req.body.password, user.password);

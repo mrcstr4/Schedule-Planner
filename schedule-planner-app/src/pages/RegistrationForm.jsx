@@ -19,6 +19,7 @@ const RegisterForm = () => {
 
   const [errors, setErrors] = useState({});
   const [error, setError] = useState("");
+  const[loading, setLoading] =useState(false)
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -27,6 +28,7 @@ const RegisterForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     let validationErrors = {};
+    setLoading(false)
 
     if (!formData.firstname) validationErrors.firstname = "First name is required";
     if (!formData.lastname) validationErrors.lastname = "Last name is required";
@@ -37,22 +39,25 @@ const RegisterForm = () => {
       validationErrors.confirmPassword = "Passwords do not match";
 
     if (Object.keys(validationErrors).length === 0) {
+      setLoading(true)
       try {
         const response = await axios.post("http://localhost:4000/api/auth/register", formData, {
           headers: { "Content-Type": "application/json" },
         });
   
         if (response.status === 200) {
-          alert(response.message);
+          alert(response.data.message);
           console.log(formData);
           navigate("/login")
 
         }
       } catch (error) {
         setError(error.response?.data?.message)
+        setLoading(false)
       }
     } else {
       setErrors(validationErrors);
+      setLoading(false)
     }
   };
 
@@ -155,9 +160,18 @@ const RegisterForm = () => {
               </div>
             </div>
 
-            <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded">
-              Register
-            </button>
+            <button
+                type="submit"
+                className="w-full bg-blue-500 text-white py-2 rounded flex justify-center items-center"
+                onClick={handleSubmit}
+                disabled={loading} // Disable button when loading
+              >
+                {loading ? (
+                  <span className="animate-spin h-5 w-5 border-4 border-white border-t-transparent rounded-full"></span>
+                ) : (
+                  "Register"
+                )}
+          </button>
           </form>
 
           <p className="text-center text-sm mt-4">

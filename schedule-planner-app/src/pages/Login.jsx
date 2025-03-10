@@ -29,6 +29,8 @@ const Login = () => {
     } catch (error) {
       const errorMessage = error.response?.data?.message || "Invalid credentials";
       dispatch({ type: "LOGIN_FAILURE", payload: errorMessage });
+      setEmail("")
+      setPassword("")
     }
   };
 
@@ -39,6 +41,7 @@ const Login = () => {
   
 
   return (
+    
     <div className="flex min-h-screen bg-white relative">
       
       <img src={a2kLogo} alt="A2K Logo" className="absolute top-6 left-8 w-32" />
@@ -100,12 +103,18 @@ const Login = () => {
             </div>
 
             {/* Login Button */}
-            <button disabled={loading}
-              type="submit"
-              className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition"
-            >
-              Login
-            </button>
+            <button
+                type="submit"
+                className="w-full bg-blue-500 text-white py-2 rounded flex justify-center items-center"
+                onClick={handleSubmit}
+                disabled={loading} // Disable button when loading
+              >
+                {loading ? (
+                  <span className="animate-spin h-5 w-5 border-4 border-white border-t-transparent rounded-full"></span>
+                ) : (
+                  "Login"
+                )}
+          </button>
           </form>
           <p className="text-center text-sm mt-4">
             <a href="/register" className="text-blue-500">Register</a>

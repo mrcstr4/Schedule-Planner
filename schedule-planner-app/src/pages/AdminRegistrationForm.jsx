@@ -18,6 +18,7 @@ const AdminRegistrationForm = () => {
 
   const [errors, setErrors] = useState({});
   const [error, setError] = useState("");
+  const[loading, setLoading] =useState(false)
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -26,6 +27,7 @@ const AdminRegistrationForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     let validationErrors = {};
+    setLoading(false)
 
     if (!formData.firstname) validationErrors.firstname = "First name is required";
     if (!formData.lastname) validationErrors.lastname = "Last name is required";
@@ -36,22 +38,25 @@ const AdminRegistrationForm = () => {
       validationErrors.confirmPassword = "Passwords do not match";
 
     if (Object.keys(validationErrors).length === 0) {
+      setLoading(true)
       try {
         const response = await axios.post("http://localhost:4000/api/auth/admin/register", formData, {
           headers: { "Content-Type": "application/json" },
         });
   
         if (response.status === 200) {
-          alert("Register successfully");
+          alert(response.data.message);
           console.log(formData);
           navigate("/admin/login")
           
         }
       } catch (error) {
         setError(error.response?.data?.message)
+        setLoading(false)
       }
     } else {
       setErrors(validationErrors);
+      setLoading(false)
     }
   };
 
@@ -157,8 +162,17 @@ const AdminRegistrationForm = () => {
                 </div>
               </div>
 
-              <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded">
-                Register
+              <button
+                  type="submit"
+                  className="w-full bg-blue-500 text-white py-2 rounded flex justify-center items-center"
+                  onClick={handleSubmit}
+                  disabled={loading} // Disable button when loading
+                >
+                  {loading ? (
+                    <span className="animate-spin h-5 w-5 border-4 border-white border-t-transparent rounded-full"></span>
+                  ) : (
+                    "Register"
+                  )}
               </button>
 
             </form>
