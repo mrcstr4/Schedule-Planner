@@ -10,8 +10,6 @@ import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import ResetPassword from './pages/ResetPassword';
 import ForgotPassword from './pages/ForgotPassword';
-import ReqShift from './pages/Employee/ReqShift';
-import Profile from './pages/Employee/Profile';
 
 
 
@@ -28,10 +26,6 @@ function App() {
             <Route path="/register" element={<RegisterForm />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
-            <Route path="/request-shift" element={<ReqShift />} />
-            <Route path="/profile" element={<Profile />} />
-
-
 
             <Route path="/admin/register" element={<AdminRegistrationForm />} />
             <Route path="/admin/login" element={<AdminLogin />} />
